@@ -1,0 +1,37 @@
+@ContosoPizza_HostAddress = http://0.0.0.0:5084
+
+###
+
+GET {{ContosoPizza_HostAddress}}/pizzas/
+Accept: application/json
+
+###
+
+GET {{ContosoPizza_HostAddress}}/pizzas/4
+Accept: application/json
+
+###
+
+POST {{ContosoPizza_HostAddress}}/pizzas/
+Content-Type: application/json
+
+{
+    "id": 4,
+    "name": "GF Buffalo Chicken"
+}
+
+###
+
+PUT {{ContosoPizza_HostAddress}}/pizzas
+Content-Type: application/json
+
+{
+    "id": 4,
+    "name": "GF Buffalo Chicken, for those that like it spicy"
+}
+
+###
+
+DELETE {{ContosoPizza_HostAddress}}/pizza/4
+
+###
