@@ -1,10 +1,10 @@
 using Microsoft.OpenApi.Models;
-using PizzaStore.DB;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-
+using PizzaStore.Models;
+using PizzaStore.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
@@ -12,7 +12,8 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseInMemoryDatabase("AppDb"));
-    
+builder.Services.AddDbContext<PizzaDb>(options => options.UseInMemoryDatabase("items"));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -34,11 +35,34 @@ if (app.Environment.IsDevelopment())
     
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/pizzas/{id}", (int id) => PizzaDB.GetPizza(id));
-app.MapGet("/pizzas", () => PizzaDB.GetPizzas());
-app.MapPost("/pizzas", (Pizza pizza) => PizzaDB.CreatePizza(pizza)).RequireAuthorization();
-app.MapPut("/pizzas", (Pizza pizza) => PizzaDB.UpdatePizza(pizza)).RequireAuthorization();
-app.MapDelete("/pizzas/{id}", (int id) => PizzaDB.RemovePizza(id)).RequireAuthorization();
+app.MapGet("/pizza/{id}", async (PizzaDb db, int id) => await db.Pizzas.FindAsync(id));
+app.MapGet("/pizzas", async (PizzaDb db) => await db.Pizzas.ToListAsync());
+app.MapPost("/pizza", async (PizzaDb db, Pizza pizza) =>
+{
+    await db.Pizzas.AddAsync(pizza);
+    await db.SaveChangesAsync();
+    return Results.Created($"/pizza/{pizza.Id}", pizza);
+}).RequireAuthorization();
+app.MapPut("/pizza/{id}", async (PizzaDb db, Pizza updatepizza, int id) =>
+{
+    var pizza = await db.Pizzas.FindAsync(id);
+    if (pizza is null) return Results.NotFound();
+    pizza.Name = updatepizza.Name;
+    pizza.Description = updatepizza.Description;
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+}).RequireAuthorization();
+app.MapDelete("/pizza/{id}", async (PizzaDb db, int id) =>
+{
+    var pizza = await db.Pizzas.FindAsync(id);
+    if (pizza is null)
+    {
+        return Results.NotFound();
+    }
+    db.Pizzas.Remove(pizza);
+    await db.SaveChangesAsync();
+    return Results.Ok();
+}).RequireAuthorization();
 
 app.MapPost("/logout", async (SignInManager<IdentityUser> signInManager,
     [FromBody] object empty) =>

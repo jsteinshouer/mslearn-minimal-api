@@ -7,7 +7,7 @@ Accept: application/json
 
 ###
 
-GET {{ContosoPizza_HostAddress}}/pizzas/4
+GET {{ContosoPizza_HostAddress}}/pizza/1
 Accept: application/json
 
 ###
@@ -27,6 +27,7 @@ Content-Type: application/json
 # @name loginRequest
 POST {{ContosoPizza_HostAddress}}/login/
 Content-Type: application/json
+
 {
   "email": "me@example.com",
   "password": "P@ssword1"
@@ -40,28 +41,29 @@ Content-Type: application/json
 
 ###
 
-POST {{ContosoPizza_HostAddress}}/pizzas/
+POST {{ContosoPizza_HostAddress}}/pizza/
 Authorization: Bearer {{loginRequest.response.body.accessToken}}
 Content-Type: application/json
 
 {
-    "id": 4,
-    "name": "GF Buffalo Chicken"
+    "name": "Pepperoni",
+    "description": "A classic pepperoni pizza"
 }
 
 ###
 
-PUT {{ContosoPizza_HostAddress}}/pizzas
+PUT {{ContosoPizza_HostAddress}}/pizza/1
 Authorization: Bearer {{loginRequest.response.body.accessToken}}
 Content-Type: application/json
 
 {
-    "id": 4,
-    "name": "GF Buffalo Chicken, for those that like it spicy"
+    "name": "GF Buffalo Chicken",
+    "description": "for those that like it spicy"
 }
 
 ###
 
-DELETE {{ContosoPizza_HostAddress}}/pizza/2
+DELETE {{ContosoPizza_HostAddress}}/pizza/1
+Authorization: Bearer {{loginRequest.response.body.accessToken}}
 
 ###

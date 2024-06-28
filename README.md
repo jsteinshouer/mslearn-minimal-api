@@ -26,3 +26,28 @@ dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
 
 ```
+
+
+## [Add EF core] (https://learn.microsoft.com/en-us/training/modules/build-web-api-minimal-database)
+
+1. Add EF Core - Already done in previous module
+
+```
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+```
+
+2. Add model
+
+```
+namespace PizzaStore.Models 
+{
+    public class Pizza
+    {
+          public int Id { get; set; }
+          public string? Name { get; set; }
+          public string? Description { get; set; }
+    }
+}
+```
+
+3. Add PizzaDB context
